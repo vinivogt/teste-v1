@@ -1,5 +1,3 @@
-// script.js - extracted from index.html
-
 // Simple animation for flights
 document.querySelectorAll('.flight').forEach(flight => {
     flight.style.animationDelay = `${Math.random() * 2}s`;
