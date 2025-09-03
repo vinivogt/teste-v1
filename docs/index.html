@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Radar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d3a5f 0%, #1a237e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #64ffda;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #bbdefb;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: rgba(13, 17, 28, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #64ffda;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .file-list li {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: rgba(30, 35, 56, 0.6);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border-left: 4px solid #64ffda;
+        }
+        
+        .file-list li:hover {
+            background: rgba(30, 35, 56, 1);
+            transform: translateX(5px);
+        }
+        
+        .file-icon {
+            color: #64b5f6;
+            font-size: 1.2rem;
+        }
+        
+        .code-block {
+            background: #1e2338;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .code-block code {
+            color: #e6db74;
+        }
+        
+        .keyword {
+            color: #f92672;
+        }
+        
+        .comment {
+            color: #75715e;
+        }
+        
+        .string {
+            color: #a6e22e;
+        }
+        
+        .radar-preview {
+            height: 300px;
+            background: #0a0f1b;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #64ffda;
+        }
+        
+        .radar-sweep {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(100, 255, 218, 0.2));
+            transform-origin: left center;
+            animation: sweep 4s infinite linear;
+        }
+        
+        @keyframes sweep {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .flight {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ff5252;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .flight::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ff5252;
+            opacity: 0.5;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                width: 20px;
+                height: 20px;
+                opacity: 0.5;
+            }
+            100% {
+                width: 40px;
+                height: 40px;
+                opacity: 0;
+            }
+        }
+        
+        .steps {
+            margin-top: 20px;
+        }
+        
+        .step {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .step-number {
+            background: #64ffda;
+            color: #0d3a5f;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 700;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .api-info {
+            background: rgba(30, 35, 56, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #64b5f6;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #bbdefb;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn {
+            background: #64ffda;
+            color: #0d3a5f;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .btn:hover {
+            background: #1de9b6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Flight Radar Project</h1>
+            <p class="subtitle">A guide to building and deploying a flight tracking application on GitHub Pages</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-folder-open"></i> Required Files</h2>
+                <p>To build a flight radar, you'll need these files in your GitHub repository:</p>
+                
+                <ul class="file-list">
+                    <li><i class="fas fa-file-code file-icon"></i> index.html - Main HTML file</li>
+                    <li><i class="fas fa-file-code file-icon"></i> styles.css - CSS styling</li>
+                    <li><i class="fas fa-file-code file-icon"></i> script.js - JavaScript functionality</li>
+                    <li><i class="fas fa-file-image file-icon"></i> assets/ - Folder for images</li>
+                    <li><i class="fas fa-cog file-icon"></i> config.js - API configuration</li>
+                    <li><i class="fas fa-file-alt file-icon"></i> README.md - Project documentation</li>
+                </ul>
+                
+                <div class="code-block">
+                    <code>
+                        <span class="comment">// Basic project structure</span><br>
+                        flight-radar/<br>
+                        ├── <span class="keyword">index</span>.html<br>
+                        ├── <span class="keyword">styles</span>.css<br>
+                        ├── <span class="keyword">script</span>.js<br>
+                        ├── <span class="keyword">config</span>.js<br>
+                        ├── <span class="keyword">assets</span>/<br>
+                        │   ├── <span class="keyword">icon</span>.png<br>
+                        │   └── <span class="keyword">plane</span>.svg<br>
+                        └── <span class="keyword">README</span>.md
+                    </code>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-globe-americas"></i> Live Preview</h2>
+                <p>Here's a simplified visualization of what your flight radar could look like:</p>
+                
+                <div class="radar-preview">
+                    <div class="radar-sweep"></div>
+                    <div class="flight" style="top: 30%; left: 40%;"></div>
+                    <div class="flight" style="top: 60%; left: 70%;"></div>
+                    <div class="flight" style="top: 45%; left: 55%;"></div>
+                    <div class="flight" style="top: 75%; left: 30%;"></div>
+                </div>
+                
+                <div class="api-info">
+                    <h3><i class="fas fa-key"></i> API Integration</h3>
+                    <p>You'll need to use a flight data API like:</p>
+                    <ul>
+                        <li>OpenSky Network API</li>
+                        <li>ADS-B Exchange API</li>
+                        <li>AirLabs API</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 30px;">
+            <h2 class="card-title"><i class="fas fa-code"></i> Sample HTML Structure</h2>
+            
+            <div class="code-block">
+                <code>
+                    <span class="comment">&lt;!-- Basic HTML structure for flight radar --&gt;</span><br>
+                    &lt;!DOCTYPE <span class="keyword">html</span>&gt;<br>
+                    &lt;<span class="keyword">html</span> <span class="string">lang</span>=<span class="string">"en"</span>&gt;<br>
+                    &lt;<span class="keyword">head</span>&gt;<br>
+                    &nbsp;&nbsp;&lt;<span class="keyword">meta</span> <span class="string">charset</span>=<span class="string">"UTF-8"</span>&gt;<br>
+                    &nbsp;&nbsp;&lt;<span class="keyword">title</span>&gt;Flight Radar&lt;/<span class="keyword">title</span>&gt;<br>
+                    &nbsp;&nbsp;&lt;<span class="keyword">link</span> <span class="string">rel</span>=<span class="string">"stylesheet"</span> <span class="string">href</span>=<span class="string">"styles.css"</span>&gt;<br>
+                    &lt;/<span class="keyword">head</span>&gt;<br>
+                    &lt;<span class="keyword">body</span>&gt;<br>
+                    &nbsp;&nbsp;&lt;<span class="keyword">div</span> <span class="string">class</span>=<span class="string">"container"</span>&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="keyword">div</span> <span class="string">id</span>=<span class="string">"map"</span>&gt;&lt;/<span class="keyword">div</span>&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="keyword">div</span> <span class="string">class</span>=<span class="string">"controls"</span>&gt;&lt;/<span class="keyword">div</span>&gt;<br>
+                    &nbsp;&nbsp;&lt;/<span class="keyword">div</span>&gt;<br>
+                    &nbsp;&nbsp;&lt;<span class="keyword">script</span> <span class="string">src</span>=<span class="string">"config.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;<br>
+                    &nbsp;&nbsp;&lt;<span class="keyword">script</span> <span class="string">src</span>=<span class="string">"script.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;<br>
+                    &lt;/<span class="keyword">body</span>&gt;<br>
+                    &lt;/<span class="keyword">html</span>&gt;
+                </code>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 30px;">
+            <h2 class="card-title"><i class="fas fa-rocket"></i> Deployment Steps</h2>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Create GitHub Repository</h3>
+                        <p>Create a new repository on GitHub with a name like "flight-radar"</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Upload Files</h3>
+                        <p>Add all your HTML, CSS, JavaScript, and asset files to the repository</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Enable GitHub Pages</h3>
+                        <p>Go to repository Settings → Pages → Select main branch as source</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Access Your Site</h3>
+                        <p>Your flight radar will be available at https://username.github.io/repository-name</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="window.open('https://pages.github.com/', '_blank')">
+                <i class="fas fa-external-link-alt"></i> Learn more about GitHub Pages
+            </button>
+        </div>
+        
+        <footer>
+            <p>Flight Radar Project &copy; 2023 | Hosted on GitHub Pages</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple animation for flights
+        document.querySelectorAll('.flight').forEach(flight => {
+            flight.style.animationDelay = `${Math.random() * 2}s`;
+        });
+        
+        // Add more flights dynamically
+        setInterval(() => {
+            const radar = document.querySelector('.radar-preview');
+            const flight = document.createElement('div');
+            flight.className = 'flight';
+            flight.style.top = `${Math.random() * 80 + 10}%`;
+            flight.style.left = `${Math.random() * 80 + 10}%`;
+            radar.appendChild(flight);
+            
+            // Remove some flights after a while
+            if (radar.children.length > 8) {
+                radar.removeChild(radar.children[1]);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
