@@ -3,141 +3,844 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flight Radar</title>
+    <title>Flight Radar - Separated Code</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* styles.css */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0f2d 0%, #1d2671 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2364ffda" fill-opacity="0.1" d="M0,128L48,117.3C96,107,192,85,288,112C384,139,480,213,576,218.7C672,224,768,160,864,138.7C960,117,1056,139,1152,149.3C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #64ffda;
+            text-shadow: 0 0 15px rgba(100, 255, 218, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #bbdefb;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: rgba(13, 17, 28, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #64ffda;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Globe Styles */
+        .globe-container {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 10px;
+            background: radial-gradient(circle at center, #0a1030 0%, #050720 100%);
+        }
+        
+        .globe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            margin-top: -150px;
+            margin-left: -150px;
+            border-radius: 50%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><circle cx="150" cy="150" r="145" fill="%2305124d" stroke="%2364ffda" stroke-width="2"/><path d="M150 5A145 145 0 0 1 150 295" stroke="%2364ffda" stroke-width="0.5" fill="none"/><path d="M150 25A125 125 0 0 1 150 275" stroke="%2364ffda" stroke-width="0.5" fill="none"/><path d="M150 45A105 105 0 0 1 150 255" stroke="%2364ffda" stroke-width="0.5" fill="none"/><path d="M5 150A145 145 0 0 1 295 150" stroke="%2364ffda" stroke-width="0.5" fill="none"/><path d="M25 150A125 125 0 0 1 275 150" stroke="%2364ffda" stroke-width="0.5" fill="none"/><path d="M45 150A105 105 0 0 1 255 150" stroke="%2364ffda" stroke-width="0.5" fill="none"/></svg>');
+            background-size: cover;
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.5), 
+                        inset 0 0 50px rgba(0, 0, 0, 0.8);
+            animation: rotateGlobe 120s infinite linear;
+        }
+        
+        @keyframes rotateGlobe {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .clouds {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><g fill="%23ffffff" opacity="0.1"><circle cx="80" cy="70" r="15"/><circle cx="95" cy="65" r="10"/><circle cx="65" cy="65" r="8"/><circle cx="220" cy="120" r="12"/><circle cx="235" cy="115" r="8"/><circle cx="205" cy="115" r="6"/><circle cx="120" cy="200" r="18"/><circle cx="140" cy="195" r="12"/><circle cx="100" cy="195" r="9"/></g></svg>');
+            animation: rotateClouds 100s infinite linear;
+            opacity: 0.6;
+        }
+        
+        @keyframes rotateClouds {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .flight {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #ff5252;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+        
+        .flight::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #ff5252;
+            opacity: 0.5;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s infinite;
+        }
+        
+        .flight:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            z-index: 100;
+        }
+        
+        .flight-path {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .path {
+            stroke: #64ffda;
+            stroke-width: 1;
+            stroke-dasharray: 5;
+            fill: none;
+            animation: dash 20s linear infinite;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 1000;
+            }
+        }
+        
+        /* Plane Info Panel */
+        .info-panel {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .flight-info {
+            background: rgba(30, 35, 56, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #64b5f6;
+        }
+        
+        .flight-info h3 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: #bbdefb;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #64ffda;
+        }
+        
+        .airport-info {
+            background: rgba(30, 35, 56, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-left: 4px solid #ff5252;
+        }
+        
+        .airport {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .airport:last-child {
+            margin-bottom: 0;
+        }
+        
+        .airport-name {
+            font-weight: 600;
+            color: #64ffda;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .airport-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .detail-item {
+            font-size: 0.9rem;
+        }
+        
+        .detail-value {
+            color: #bbdefb;
+        }
+        
+        .no-selection {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #bbdefb;
+            text-align: center;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        
+        .btn {
+            background: #64ffda;
+            color: #0d3a5f;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #1de9b6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #bbdefb;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .globe-container {
+                height: 350px;
+            }
+            
+            .info-grid, .airport-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .file-tabs {
+            display: flex;
+            background: rgba(30, 35, 56, 0.8);
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .file-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            background: rgba(30, 35, 56, 0.6);
+            border-right: 1px solid rgba(100, 255, 218, 0.2);
+            transition: all 0.3s;
+        }
+
+        .file-tab.active {
+            background: rgba(13, 17, 28, 0.9);
+            color: #64ffda;
+        }
+
+        .file-content {
+            background: rgba(13, 17, 28, 0.9);
+            border-radius: 0 0 8px 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .code-line {
+            margin-bottom: 4px;
+            white-space: pre-wrap;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .code-tag {
+            color: #569cd6;
+        }
+
+        .code-attr {
+            color: #9cdcfe;
+        }
+
+        .code-value {
+            color: #ce9178;
+        }
+
+        .code-selector {
+            color: #d7ba7d;
+        }
+
+        .code-property {
+            color: #9cdcfe;
+        }
+
+        .code-function {
+            color: #dcdcaa;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Flight Radar Project</h1>
-            <p class="subtitle">A guide to building and deploying a flight tracking application on GitHub Pages</p>
+            <h1>Flight Radar - Separated Code</h1>
+            <p class="subtitle">This implementation shows how the code would be separated into different files</p>
         </header>
+
+        <div class="file-tabs">
+            <div class="file-tab active" data-file="index.html">index.html</div>
+            <div class="file-tab" data-file="styles.css">styles.css</div>
+            <div class="file-tab" data-file="script.js">script.js</div>
+        </div>
+
+        <div class="file-content" id="code-content">
+            <div class="code-line"><span class="code-comment">&lt;!DOCTYPE html&gt;</span></div>
+            <div class="code-line"><span class="code-tag">&lt;html</span> <span class="code-attr">lang</span>=<span class="code-value">"en"</span><span class="code-tag">&gt;</span></div>
+            <div class="code-line"><span class="code-tag">&lt;head&gt;</span></div>
+            <div class="code-line">  <span class="code-tag">&lt;meta</span> <span class="code-attr">charset</span>=<span class="code-value">"UTF-8"</span><span class="code-tag">&gt;</span></div>
+            <div class="code-line">  <span class="code-tag">&lt;meta</span> <span class="code-attr">name</span>=<span class="code-value">"viewport"</span> <span class="code-attr">content</span>=<span class="code-value">"width=device-width, initial-scale=1.0"</span><span class="code-tag">&gt;</span></div>
+            <div class="code-line">  <span class="code-tag">&lt;title&gt;</span>Flight Radar<span class="code-tag">&lt;/title&gt;</span></div>
+            <div class="code-line">  <span class="code-tag">&lt;link</span> <span class="code-attr">rel</span>=<span class="code-value">"stylesheet"</span> <span class="code-attr">href</span>=<span class="code-value">"styles.css"</span><span class="code-tag">&gt;</span></div>
+            <div class="code-line"><span class="code-tag">&lt;/head&gt;</span></div>
+            <div class="code-line"><span class="code-tag">&lt;body&gt;</span></div>
+            <div class="code-line">  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"container"</span><span class="code-tag">&gt;</span></div>
+            <div class="code-line">    <span class="code-comment">&lt;!-- Page content goes here --&gt;</span></div>
+            <div class="code-line">  <span class="code-tag">&lt;/div&gt;</span></div>
+            <div class="code-line">  <span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-value">"script.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span></div>
+            <div class="code-line"><span class="code-tag">&lt;/body&gt;</span></div>
+            <div class="code-line"><span class="code-tag">&lt;/html&gt;</span></div>
+        </div>
         
         <div class="main-content">
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-folder-open"></i> Required Files</h2>
-                <p>To build a flight radar, you'll need these files in your GitHub repository:</p>
+                <h2 class="card-title"><i class="fas fa-globe-americas"></i> Live Flight Radar</h2>
+                <div class="globe-container">
+                    <div class="globe">
+                        <div class="clouds"></div>
+                    </div>
+                    <div class="flight-path">
+                        <svg width="100%" height="100%" viewBox="0 0 1000 1000">
+                            <path class="path" d="M300,350 C400,150 600,150 700,350" />
+                            <path class="path" d="M200,500 C350,300 650,300 800,500" />
+                            <path class="path" d="M250,650 C450,750 550,750 750,650" />
+                        </svg>
+                    </div>
+                    <div class="flight" style="top: 35%; left: 30%;" data-flight="AA1234"></div>
+                    <div class="flight" style="top: 50%; left: 50%;" data-flight="DL5678"></div>
+                    <div class="flight" style="top: 65%; left: 70%;" data-flight="UA9012"></div>
+                    <div class="flight" style="top: 45%; left: 60%;" data-flight="LH3456"></div>
+                    <div class="flight" style="top: 55%; left: 40%;" data-flight="BA7890"></div>
+                </div>
                 
-                <ul class="file-list">
-                    <li><i class="fas fa-file-code file-icon"></i> index.html - Main HTML file</li>
-                    <li><i class="fas fa-file-code file-icon"></i> styles.css - CSS styling</li>
-                    <li><i class="fas fa-file-code file-icon"></i> script.js - JavaScript functionality</li>
-                    <li><i class="fas fa-file-image file-icon"></i> assets/ - Folder for images</li>
-                    <li><i class="fas fa-cog file-icon"></i> config.js - API configuration</li>
-                    <li><i class="fas fa-file-alt file-icon"></i> README.md - Project documentation</li>
-                </ul>
-                
-                <div class="code-block">
-                    <code>
-                        <span class="comment">// Basic project structure</span><br>
-                        flight-radar/<br>
-                        ├── <span class="keyword">index</span>.html<br>
-                        ├── <span class="keyword">styles</span>.css<br>
-                        ├── <span class="keyword">script</span>.js<br>
-                        ├── <span class="keyword">config</span>.js<br>
-                        ├── <span class="keyword">assets</span>/<br>
-                        │   ├── <span class="keyword">icon</span>.png<br>
-                        │   └── <span class="keyword">plane</span>.svg<br>
-                        └── <span class="keyword">README</span>.md
-                    </code>
+                <div class="controls">
+                    <button class="btn" id="zoom-in"><i class="fas fa-search-plus"></i> Zoom In</button>
+                    <button class="btn" id="zoom-out"><i class="fas fa-search-minus"></i> Zoom Out</button>
+                    <button class="btn" id="reset-view"><i class="fas fa-sync"></i> Reset View</button>
                 </div>
             </div>
             
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-globe-americas"></i> Live Preview</h2>
-                <p>Here's a simplified visualization of what your flight radar could look like:</p>
-                
-                <div class="radar-preview">
-                    <div class="radar-sweep"></div>
-                    <div class="flight" style="top: 30%; left: 40%;"></div>
-                    <div class="flight" style="top: 60%; left: 70%;"></div>
-                    <div class="flight" style="top: 45%; left: 55%;"></div>
-                    <div class="flight" style="top: 75%; left: 30%;"></div>
-                </div>
-                
-                <div class="api-info">
-                    <h3><i class="fas fa-key"></i> API Integration</h3>
-                    <p>You'll need to use a flight data API like:</p>
-                    <ul>
-                        <li>OpenSky Network API</li>
-                        <li>ADS-B Exchange API</li>
-                        <li>AirLabs API</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card" style="margin-top: 30px;">
-            <h2 class="card-title"><i class="fas fa-code"></i> Sample HTML Structure</h2>
-            
-            <div class="code-block">
-                <code>
-                    <span class="comment">&lt;!-- Basic HTML structure for flight radar --&gt;</span><br>
-                    &lt;!DOCTYPE <span class="keyword">html</span>&gt;<br>
-                    &lt;<span class="keyword">html</span> <span class="string">lang</span>=<span class="string">"en"</span>&gt;<br>
-                    &lt;<span class="keyword">head</span>&gt;<br>
-                    &nbsp;&nbsp;&lt;<span class="keyword">meta</span> <span class="string">charset</span>=<span class="string">"UTF-8"</span>&gt;<br>
-                    &nbsp;&nbsp;&lt;<span class="keyword">title</span>&gt;Flight Radar&lt;/<span class="keyword">title</span>&gt;<br>
-                    &nbsp;&nbsp;&lt;<span class="keyword">link</span> <span class="string">rel</span>=<span class="string">"stylesheet"</span> <span class="string">href</span>=<span class="string">"styles.css"</span>&gt;<br>
-                    &lt;/<span class="keyword">head</span>&gt;<br>
-                    &lt;<span class="keyword">body</span>&gt;<br>
-                    &nbsp;&nbsp;&lt;<span class="keyword">div</span> <span class="string">class</span>=<span class="string">"container"</span>&gt;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="keyword">div</span> <span class="string">id</span>=<span class="string">"map"</span>&gt;&lt;/<span class="keyword">div</span>&gt;<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="keyword">div</span> <span class="string">class</span>=<span class="string">"controls"</span>&gt;&lt;/<span class="keyword">div</span>&gt;<br>
-                    &nbsp;&nbsp;&lt;/<span class="keyword">div</span>&gt;<br>
-                    &nbsp;&nbsp;&lt;<span class="keyword">script</span> <span class="string">src</span>=<span class="string">"config.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;<br>
-                    &nbsp;&nbsp;&lt;<span class="keyword">script</span> <span class="string">src</span>=<span class="string">"script.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;<br>
-                    &lt;/<span class="keyword">body</span>&gt;<br>
-                    &lt;/<span class="keyword">html</span>&gt;
-                </code>
-            </div>
-        </div>
-        
-        <div class="card" style="margin-top: 30px;">
-            <h2 class="card-title"><i class="fas fa-rocket"></i> Deployment Steps</h2>
-            
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3>Create GitHub Repository</h3>
-                        <p>Create a new repository on GitHub with a name like "flight-radar"</p>
+                <h2 class="card-title"><i class="fas fa-plane"></i> Flight Information</h2>
+                <div class="info-panel">
+                    <div class="flight-info">
+                        <h3><i class="fas fa-info-circle"></i> Selected Flight</h3>
+                        <div class="no-selection" id="no-selection">
+                            <p><i class="fas fa-mouse-pointer fa-2x"></i><br><br>Click on an aircraft to view details</p>
+                        </div>
+                        <div id="flight-details" style="display: none;">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Flight Number</div>
+                                    <div class="info-value" id="flight-number">AA1234</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Speed</div>
+                                    <div class="info-value" id="flight-speed">845 km/h</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Altitude</div>
+                                    <div class="info-value" id="flight-altitude">10,700 m</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Aircraft</div>
+                                    <div class="info-value" id="flight-aircraft">Boeing 787-9</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Origin</div>
+                                    <div class="info-value" id="flight-origin">JFK</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Destination</div>
+                                    <div class="info-value" id="flight-destination">LHR</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3>Upload Files</h3>
-                        <p>Add all your HTML, CSS, JavaScript, and asset files to the repository</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3>Enable GitHub Pages</h3>
-                        <p>Go to repository Settings → Pages → Select main branch as source</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h3>Access Your Site</h3>
-                        <p>Your flight radar will be available at https://username.github.io/repository-name</p>
+                    
+                    <div class="airport-info">
+                        <h3><i class="fas fa-map-marked-alt"></i> Airport Details</h3>
+                        <div id="airport-details">
+                            <div class="airport">
+                                <div class="airport-name"><i class="fas fa-plane-departure"></i> <span id="origin-airport">John F. Kennedy International Airport (JFK)</span></div>
+                                <div class="airport-details">
+                                    <div class="detail-item">City: <span class="detail-value" id="origin-city">New York</span></div>
+                                    <div class="detail-item">Country: <span class="detail-value" id="origin-country">United States</span></div>
+                                    <div class="detail-item">Terminal: <span class="detail-value" id="origin-terminal">7</span></div>
+                                    <div class="detail-item">Departure: <span class="detail-value" id="origin-time">18:30 EST</span></div>
+                                </div>
+                            </div>
+                            <div class="airport">
+                                <div class="airport-name"><i class="fas fa-plane-arrival"></i> <span id="destination-airport">Heathrow Airport (LHR)</span></div>
+                                <div class="airport-details">
+                                    <div class="detail-item">City: <span class="detail-value" id="destination-city">London</span></div>
+                                    <div class="detail-item">Country: <span class="detail-value" id="destination-country">United Kingdom</span></div>
+                                    <div class="detail-item">Terminal: <span class="detail-value" id="destination-terminal">5</span></div>
+                                    <div class="detail-item">Arrival: <span class="detail-value" id="destination-time">06:45 GMT</span></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <button class="btn" onclick="window.open('https://pages.github.com/', '_blank')">
-                <i class="fas fa-external-link-alt"></i> Learn more about GitHub Pages
-            </button>
         </div>
         
         <footer>
-            <p>Flight Radar Project &copy; 2023 | Hosted on GitHub Pages</p>
+            <p>Interactive Flight Radar &copy; 2023 | HTML, CSS, and JavaScript in separate files</p>
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // script.js
+        // Flight data
+        const flights = {
+            "AA1234": {
+                number: "AA1234",
+                speed: "845 km/h",
+                altitude: "10,700 m",
+                aircraft: "Boeing 787-9",
+                origin: "JFK",
+                destination: "LHR",
+                originAirport: "John F. Kennedy International Airport",
+                originCity: "New York",
+                originCountry: "United States",
+                originTerminal: "7",
+                originTime: "18:30 EST",
+                destinationAirport: "Heathrow Airport",
+                destinationCity: "London",
+                destinationCountry: "United Kingdom",
+                destinationTerminal: "5",
+                destinationTime: "06:45 GMT"
+            },
+            "DL5678": {
+                number: "DL5678",
+                speed: "910 km/h",
+                altitude: "11,300 m",
+                aircraft: "Airbus A330-900neo",
+                origin: "ATL",
+                destination: "CDG",
+                originAirport: "Hartsfield-Jackson Atlanta International Airport",
+                originCity: "Atlanta",
+                originCountry: "United States",
+                originTerminal: "I",
+                originTime: "20:15 EST",
+                destinationAirport: "Charles de Gaulle Airport",
+                destinationCity: "Paris",
+                destinationCountry: "France",
+                destinationTerminal: "2E",
+                destinationTime: "10:30 CET"
+            },
+            "UA9012": {
+                number: "UA9012",
+                speed: "780 km/h",
+                altitude: "9,800 m",
+                aircraft: "Boeing 777-200ER",
+                origin: "SFO",
+                destination: "NRT",
+                originAirport: "San Francisco International Airport",
+                originCity: "San Francisco",
+                originCountry: "United States",
+                originTerminal: "International",
+                originTime: "12:45 PST",
+                destinationAirport: "Narita International Airport",
+                destinationCity: "Tokyo",
+                destinationCountry: "Japan",
+                destinationTerminal: "1",
+                destinationTime: "16:20 JST"
+            },
+            "LH3456": {
+                number: "LH3456",
+                speed: "820 km/h",
+                altitude: "10,200 m",
+                aircraft: "Airbus A350-900",
+                origin: "FRA",
+                destination: "DXB",
+                originAirport: "Frankfurt Airport",
+                originCity: "Frankfurt",
+                originCountry: "Germany",
+                originTerminal: "1",
+                originTime: "14:20 CET",
+                destinationAirport: "Dubai International Airport",
+                destinationCity: "Dubai",
+                destinationCountry: "UAE",
+                destinationTerminal: "3",
+                destinationTime: "22:45 GST"
+            },
+            "BA7890": {
+                number: "BA7890",
+                speed: "870 km/h",
+                altitude: "11,000 m",
+                aircraft: "Airbus A380",
+                origin: "LHR",
+                destination: "SIN",
+                originAirport: "Heathrow Airport",
+                originCity: "London",
+                originCountry: "United Kingdom",
+                originTerminal: "5",
+                originTime: "21:10 GMT",
+                destinationAirport: "Changi Airport",
+                destinationCity: "Singapore",
+                destinationCountry: "Singapore",
+                destinationTerminal: "3",
+                destinationTime: "17:30 SGT"
+            }
+        };
+
+        // Select flight elements
+        const flightElements = document.querySelectorAll('.flight');
+        const noSelection = document.getElementById('no-selection');
+        const flightDetails = document.getElementById('flight-details');
+        const airportDetails = document.getElementById('airport-details');
+
+        // Add click event to each flight
+        flightElements.forEach(flight => {
+            flight.addEventListener('click', () => {
+                const flightNumber = flight.getAttribute('data-flight');
+                const flightData = flights[flightNumber];
+                
+                if (flightData) {
+                    // Update flight details
+                    document.getElementById('flight-number').textContent = flightData.number;
+                    document.getElementById('flight-speed').textContent = flightData.speed;
+                    document.getElementById('flight-altitude').textContent = flightData.altitude;
+                    document.getElementById('flight-aircraft').textContent = flightData.aircraft;
+                    document.getElementById('flight-origin').textContent = flightData.origin;
+                    document.getElementById('flight-destination').textContent = flightData.destination;
+                    
+                    // Update airport details
+                    document.getElementById('origin-airport').textContent = flightData.originAirport;
+                    document.getElementById('origin-city').textContent = flightData.originCity;
+                    document.getElementById('origin-country').textContent = flightData.originCountry;
+                    document.getElementById('origin-terminal').textContent = flightData.originTerminal;
+                    document.getElementById('origin-time').textContent = flightData.originTime;
+                    
+                    document.getElementById('destination-airport').textContent = flightData.destinationAirport;
+                    document.getElementById('destination-city').textContent = flightData.destinationCity;
+                    document.getElementById('destination-country').textContent = flightData.destinationCountry;
+                    document.getElementById('destination-terminal').textContent = flightData.destinationTerminal;
+                    document.getElementById('destination-time').textContent = flightData.destinationTime;
+                    
+                    // Show details, hide no selection message
+                    noSelection.style.display = 'none';
+                    flightDetails.style.display = 'block';
+                    airportDetails.style.display = 'block';
+                    
+                    // Highlight selected flight
+                    flightElements.forEach(f => f.style.opacity = '0.6');
+                    flight.style.opacity = '1';
+                    flight.style.zIndex = '100';
+                }
+            });
+        });
+
+        // Add zoom functionality
+        const globe = document.querySelector('.globe');
+        const clouds = document.querySelector('.clouds');
+        let scale = 1;
+
+        document.getElementById('zoom-in').addEventListener('click', () => {
+            if (scale < 1.8) {
+                scale += 0.2;
+                globe.style.transform = `rotate(${scale * 20}deg) scale(${scale})`;
+                clouds.style.transform = `rotate(${scale * 20}deg) scale(${scale})`;
+            }
+        });
+
+        document.getElementById('zoom-out').addEventListener('click', () => {
+            if (scale > 0.6) {
+                scale -= 0.2;
+                globe.style.transform = `rotate(${scale * 20}deg) scale(${scale})`;
+                clouds.style.transform = `rotate(${scale * 20}deg) scale(${scale})`;
+            }
+        });
+
+        document.getElementById('reset-view').addEventListener('click', () => {
+            scale = 1;
+            globe.style.transform = 'rotate(0deg) scale(1)';
+            clouds.style.transform = 'rotate(0deg) scale(1)';
+            flightElements.forEach(f => f.style.opacity = '1');
+            noSelection.style.display = 'flex';
+            flightDetails.style.display = 'none';
+            airportDetails.style.display = 'none';
+        });
+
+        // Animate flights
+        function animateFlights() {
+            flightElements.forEach(flight => {
+                const top = parseInt(flight.style.top);
+                const left = parseInt(flight.style.left);
+                
+                // Randomly adjust position
+                flight.style.top = `${top + (Math.random() * 0.6 - 0.3)}%`;
+                flight.style.left = `${left + (Math.random() * 0.6 - 0.3)}%`;
+            });
+            
+            requestAnimationFrame(animateFlights);
+        }
+        
+        animateFlights();
+
+        // File tabs functionality
+        const fileTabs = document.querySelectorAll('.file-tab');
+        const codeContent = document.getElementById('code-content');
+        
+        fileTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                fileTabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Update code content based on selected file
+                const file = tab.getAttribute('data-file');
+                updateCodeContent(file);
+            });
+        });
+        
+        function updateCodeContent(file) {
+            let content = '';
+            
+            if (file === 'index.html') {
+                content = `
+<div class="code-line"><span class="code-comment">&lt;!DOCTYPE html&gt;</span></div>
+<div class="code-line"><span class="code-tag">&lt;html</span> <span class="code-attr">lang</span>=<span class="code-value">"en"</span><span class="code-tag">&gt;</span></div>
+<div class="code-line"><span class="code-tag">&lt;head&gt;</span></div>
+<div class="code-line">  <span class="code-tag">&lt;meta</span> <span class="code-attr">charset</span>=<span class="code-value">"UTF-8"</span><span class="code-tag">&gt;</span></div>
+<div class="code-line">  <span class="code-tag">&lt;meta</span> <span class="code-attr">name</span>=<span class="code-value">"viewport"</span> <span class="code-attr">content</span>=<span class="code-value">"width=device-width, initial-scale=1.0"</span><span class="code-tag">&gt;</span></div>
+<div class="code-line">  <span class="code-tag">&lt;title&gt;</span>Flight Radar<span class="code-tag">&lt;/title&gt;</span></div>
+<div class="code-line">  <span class="code-tag">&lt;link</span> <span class="code-attr">rel</span>=<span class="code-value">"stylesheet"</span> <span class="code-attr">href</span>=<span class="code-value">"styles.css"</span><span class="code-tag">&gt;</span></div>
+<div class="code-line"><span class="code-tag">&lt;/head&gt;</span></div>
+<div class="code-line"><span class="code-tag">&lt;body&gt;</span></div>
+<div class="code-line">  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"container"</span><span class="code-tag">&gt;</span></div>
+<div class="code-line">    <span class="code-comment">&lt;!-- Page content goes here --&gt;</span></div>
+<div class="code-line">  <span class="code-tag">&lt;/div&gt;</span></div>
+<div class="code-line">  <span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-value">"script.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span></div>
+<div class="code-line"><span class="code-tag">&lt;/body&gt;</span></div>
+<div class="code-line"><span class="code-tag">&lt;/html&gt;</span></div>
+                `;
+            } else if (file === 'styles.css') {
+                content = `
+<div class="code-line"><span class="code-comment">/* styles.css */</span></div>
+<div class="code-line"><span class="code-selector">body</span> {</div>
+<div class="code-line">  <span class="code-property">background</span>: <span class="code-value">linear-gradient(135deg, #0c0f2d 0%, #1d2671 100%)</span>;</div>
+<div class="code-line">  <span class="code-property">color</span>: <span class="code-value">white</span>;</div>
+<div class="code-line">  <span class="code-property">min-height</span>: <span class="code-value">100vh</span>;</div>
+<div class="code-line">  <span class="code-property">overflow-x</span>: <span class="code-value">hidden</span>;</div>
+<div class="code-line">}</div>
+<div class="code-line"></div>
+<div class="code-line"><span class="code-selector">.container</span> {</div>
+<div class="code-line">  <span class="code-property">max-width</span>: <span class="code-value">1400px</span>;</div>
+<div class="code-line">  <span class="code-property">margin</span>: <span class="code-value">0 auto</span>;</div>
+<div class="code-line">  <span class="code-property">padding</span>: <span class="code-value">20px</span>;</div>
+<div class="code-line">}</div>
+<div class="code-line"></div>
+<div class="code-line"><span class="code-selector">.globe-container</span> {</div>
+<div class="code-line">  <span class="code-property">position</span>: <span class="code-value">relative</span>;</div>
+<div class="code-line">  <span class="code-property">height</span>: <span class="code-value">500px</span>;</div>
+<div class="code-line">  <span class="code-property">overflow</span>: <span class="code-value">hidden</span>;</div>
+<div class="code-line">  <span class="code-property">border-radius</span>: <span class="code-value">10px</span>;</div>
+<div class="code-line">  <span class="code-property">background</span>: <span class="code-value">radial-gradient(circle at center, #0a1030 0%, #050720 100%)</span>;</div>
+<div class="code-line">}</div>
+<div class="code-line"></div>
+<div class="code-line"><span class="code-selector">.flight</span> {</div>
+<div class="code-line">  <span class="code-property">position</span>: <span class="code-value">absolute</span>;</div>
+<div class="code-line">  <span class="code-property">width</span>: <span class="code-value">16px</span>;</div>
+<div class="code-line">  <span class="code-property">height</span>: <span class="code-value">16px</span>;</div>
+<div class="code-line">  <span class="code-property">background</span>: <span class="code-value">#ff5252</span>;</div>
+<div class="code-line">  <span class="code-property">border-radius</span>: <span class="code-value">50%</span>;</div>
+<div class="code-line">  <span class="code-property">transform</span>: <span class="code-value">translate(-50%, -50%)</span>;</div>
+<div class="code-line">  <span class="code-property">cursor</span>: <span class="code-value">pointer</span>;</div>
+<div class="code-line">  <span class="code-property">z-index</span>: <span class="code-value">10</span>;</div>
+<div class="code-line">  <span class="code-property">transition</span>: <span class="code-value">all 0.3s</span>;</div>
+<div class="code-line">}</div>
+                `;
+            } else if (file === 'script.js') {
+                content = `
+<div class="code-line"><span class="code-comment">// script.js</span></div>
+<div class="code-line"><span class="code-comment">// Flight data</span></div>
+<div class="code-line"><span class="code-keyword">const</span> <span class="code-variable">flights</span> = {</div>
+<div class="code-line">  <span class="code-string">"AA1234"</span>: {</div>
+<div class="code-line">    <span class="code-property">number</span>: <span class="code-string">"AA1234"</span>,</div>
+<div class="code-line">    <span class="code-property">speed</span>: <span class="code-string">"845 km/h"</span>,</div>
+<div class="code-line">    <span class="code-property">altitude</span>: <span class="code-string">"10,700 m"</span>,</div>
+<div class="code-line">    <span class="code-property">aircraft</span>: <span class="code-string">"Boeing 787-9"</span>,</div>
+<div class="code-line">    <span class="code-property">origin</span>: <span class="code-string">"JFK"</span>,</div>
+<div class="code-line">    <span class="code-property">destination</span>: <span class="code-string">"LHR"</span></div>
+<div class="code-line">  }</div>
+<div class="code-line">};</div>
+<div class="code-line"></div>
+<div class="code-line"><span class="code-comment">// Select flight elements</span></div>
+<div class="code-line"><span class="code-keyword">const</span> <span class="code-variable">flightElements</span> = <span class="code-function">document</span>.<span class="code-function">querySelectorAll</span>(<span class="code-string">'.flight'</span>);</div>
+<div class="code-line"></div>
+<div class="code-line"><span class="code-comment">// Add click event to each flight</span></div>
+<div class="code-line"><span class="code-variable">flightElements</span>.<span class="code-function">forEach</span>(<span class="code-variable">flight</span> <span class="code-keyword">=&gt;</span> {</div>
+<div class="code-line">  <span class="code-variable">flight</span>.<span class="code-function">addEventListener</span>(<span class="code-string">'click'</span>, () <span class="code-keyword">=&gt;</span> {</div>
+<div class="code-line">    <span class="code-keyword">const</span> <span class="code-variable">flightNumber</span> = <span class="code-variable">flight</span>.<span class="code-function">getAttribute</span>(<span class="code-string">'data-flight'</span>);</div>
+<div class="code-line">    <span class="code-keyword">const</span> <span class="code-variable">flightData</span> = <span class="code-variable">flights</span>[<span class="code-variable">flightNumber</span>];</div>
+<div class="code-line">    </div>
+<div class="code-line">    <span class="code-keyword">if</span> (<span class="code-variable">flightData</span>) {</div>
+<div class="code-line">      <span class="code-comment">// Update flight details</span></div>
+<div class="code-line">      <span class="code-function">document</span>.<span class="code-function">getElementById</span>(<span class="code-string">'flight-number'</span>).<span class="code-property">textContent</span> = <span class="code-variable">flightData</span>.<span class="code-property">number</span>;</div>
+<div class="code-line">      <span class="code-function">document</span>.<span class="code-function">getElementById</span>(<span class="code-string">'flight-speed'</span>).<span class="code-property">textContent</span> = <span class="code-variable">flightData</span>.<span class="code-property">speed</span>;</div>
+<div class="code-line">    }</div>
+<div class="code-line">  });</div>
+<div class="code-line">});</div>
+                `;
+            }
+            
+            codeContent.innerHTML = content;
+        }
+    </script>
 </body>
 </html>
