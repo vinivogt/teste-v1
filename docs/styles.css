@@ -52,7 +52,45 @@ h1 {
     font-size: 1.2rem;
     color: #bbdefb;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 auto 15px;
+}
+
+.last-updated {
+    font-size: 0.9rem;
+    color: #64b5f6;
+    background: rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.control-group label {
+    font-size: 0.9rem;
+    color: #bbdefb;
+}
+
+.control-group input {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    width: 120px;
 }
 
 .main-content {
@@ -130,6 +168,14 @@ h1 {
     100% { transform: rotate(360deg); }
 }
 
+.map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
 .flight {
     position: absolute;
     width: 16px;
@@ -181,6 +227,19 @@ h1 {
 @keyframes dash {
     to {
         stroke-dashoffset: 1000;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        width: 20px;
+        height: 20px;
+        opacity: 0.5;
+    }
+    100% {
+        width: 40px;
+        height: 40px;
+        opacity: 0;
     }
 }
 
@@ -284,13 +343,6 @@ h1 {
     text-align: center;
 }
 
-.controls {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    justify-content: center;
-}
-
 .btn {
     background: #64ffda;
     color: #0d3a5f;
@@ -311,12 +363,54 @@ h1 {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
+.btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.api-info {
+    background: rgba(30, 35, 56, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 15px;
+    border-left: 4px solid #64b5f6;
+}
+
+.api-info p {
+    margin-bottom: 15px;
+}
+
+.api-info ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.api-info li {
+    margin-bottom: 8px;
+}
+
 footer {
     text-align: center;
     margin-top: 50px;
     padding: 20px;
     color: #bbdefb;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #64ffda;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {
@@ -330,5 +424,18 @@ footer {
     
     .info-grid, .airport-details {
         grid-template-columns: 1fr;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .control-group {
+        width: 100%;
+    }
+    
+    .control-group input {
+        width: 100%;
     }
 }
